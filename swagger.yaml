@@ -1,0 +1,333 @@
+openapi: 3.0.1
+info:
+  title: Swagger Kariera
+  description: 'This is a sample server for managing jobs and companies.'
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: achilleas.tsiolkas@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: http://localhost:3000
+tags:
+- name: company
+  description: Describing management of the companies
+- name: job
+  description: Describing management of the jobs
+- name: user
+  description: Describing management of the users
+paths:
+  /company:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+      - company
+      summary: Add a new company to db
+      operationId: addCompany
+      requestBody:
+        description: Company object that needs to be added to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+        required: true
+      responses:
+        201:
+          description: Invalid input
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyFull'
+        401:
+          description: Anauthorized
+        500:
+          description: Insternal server error
+  /company/{companyId}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+      - company
+      summary: Update an existing company
+      operationId: updateCompanybyId
+      parameters:
+      - name: companyId
+        in: path
+        description: ID of company to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Company object that needs to be updated to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyFull'
+        required: true
+      responses:
+        201:
+          description: Updated
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyFull'
+        401:
+          description: Anauthorized
+        404:
+          description: Pet not found
+        500:
+          description: Insternal server error
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+      - company
+      summary: Deletes an existing company
+      operationId: deleteCompanyById
+      parameters:
+      - name: companyId
+        in: path
+        description: Company id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Deleted Succesfull
+        401:
+          description: Anauthorized
+        404:
+          description: Pet not found
+        500:
+          description: Insternal server error
+  /job:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+      - job
+      summary: Add a new job to db
+      operationId: addJob
+      requestBody:
+        description: Job object that needs to be added to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Job'
+        required: true
+      responses:
+        201:
+          description: Invalid input
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobFull'
+        401:
+          description: Anauthorized
+        500:
+          description: Insternal server error
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+      - job
+      summary: Search jobs from db
+      operationId: searchJobs
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The string that want to search
+      responses:
+        200:
+          description: success
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResults'
+        401:
+          description: Anauthorized
+        500:
+          description: Insternal server error
+  /job/{jobId}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+      - job
+      summary: Update an existing job
+      operationId: updateJobbyId
+      parameters:
+      - name: jobId
+        in: path
+        description: ID of job to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Job object that needs to be updated to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobFull'
+        required: true
+      responses:
+        201:
+          description: Updated
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobFull'
+        401:
+          description: Anauthorized
+        404:
+          description: Pet not found
+        500:
+          description: Insternal server error
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+      - job
+      summary: Deletes an existing job
+      operationId: deleteJobById
+      parameters:
+      - name: jobId
+        in: path
+        description: Job id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Deleted Succesfull
+        404:
+          description: Job not found
+        401:
+          description: Anauthorized
+        500:
+          description: Insternal server error
+  /sign-up:
+    post:
+      tags:
+      - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+          content: {}
+  /login:
+    post:
+      tags:
+      - user
+      summary: Logs user into the system
+      operationId: loginUser
+      requestBody:
+        description: Company object that needs to be updated to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+        required: true
+      responses:
+        201:
+          description: successful operation
+        401:
+          description: Invalid username/password supplied
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 30
+        password:
+          type: string
+          maxLength: 30
+        fullname:
+          type: string
+          maxLength: 100
+    Credentials:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 30
+        password:
+          type: string
+          maxLength: 30
+    Company:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 30
+        vatNo:
+          type: integer
+    CompanyFull:
+      type: object
+      properties:
+        company_id:
+          type: integer
+        name:
+          type: string
+          maxLength: 30
+        vatNo:
+          type: integer
+        deleted:
+          type: boolean
+          default: false
+    Job:
+      type: object
+      properties:
+        company_id:
+          type: integer
+        title:
+          type: string
+          maxLength: 30
+        description:
+          type: string
+          maxLength: 65535
+    JobResults:
+      type: array
+      items:
+        $ref: '#/components/schemas/Job'
+    JobFull:
+      type: object
+      properties:
+        job_id:
+          type: integer
+        company_id:
+          type: integer
+        title:
+          type: string
+          maxLength: 30
+        description:
+          type: string
+          maxLength: 65535
+        deleted:
+          type: boolean
+          default: false
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
